@@ -1,0 +1,24 @@
+# Virtual environment
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables
+.env
+
+# Docker-related files (optional)
+*.log
+
+#Alembic migration unnecessary files
+alembic/*.log   
+alembic/*.sqlite 
+
+#All pycaches
+**/__pycache__/
+.pytest_cache
+
+# Ignore Redis data and logs
+redis/
+*.rdb
