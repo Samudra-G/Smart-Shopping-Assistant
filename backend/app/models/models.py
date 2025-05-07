@@ -16,6 +16,8 @@ class User(Base):
 
     #relations
     purchases = relationship("Purchase", back_populates="user")
+    cart_items = relationship("CartItem", back_populates="user")
+    browsing_history = relationship("BrowsingHistory", back_populates="user")
 
 class Product(Base):
     __tablename__ = "products"
@@ -40,6 +42,8 @@ class Product(Base):
 
     #relations
     purchases = relationship("Purchase", back_populates="product")
+    cart_items = relationship("CartItem", back_populates="product")
+    browsing_history = relationship("BrowsingHistory", back_populates="product")
 
 class Purchase(Base):
     __tablename__ = "purchases"
@@ -51,6 +55,29 @@ class Purchase(Base):
     #relations
     user = relationship("User", back_populates="purchases")
     product = relationship("Product", back_populates="purchases")
+
+class CartItem(Base):
+    __tablename__ = "cart_items"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"))
+    product_id = Column(Integer, ForeignKey("products.id"))
+    quantity = Column(Integer, default=1)
+    added_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+
+    #relations
+    user = relationship("User", back_populates="cart_items")
+    product = relationship("Product", back_populates="cart_items")
+
+class BrowsingHistory(Base):
+    __tablename__ = "browsing_history"
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id"))
+    product_id = Column(Integer, ForeignKey("products.id"))
+    viewed_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+
+    #relations
+    user = relationship("User", back_populates="browsing_history")
+    product = relationship("Product", back_populates="browsing_history")
 
 #Optional
 class Rating(Base):

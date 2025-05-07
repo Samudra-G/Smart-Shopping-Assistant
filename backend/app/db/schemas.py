@@ -21,6 +21,44 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
+#Product schema
+class ProductBase(BaseModel):
+    name: str
+    category: str
+    description: str
+    price: float
+    final_price: Optional[float] = None
+    brand: Optional[str] = None
+    discount: Optional[str] = None
+    currency: Optional[str] = None
+    image_url: Optional[str] = None
+    image_urls: Optional[List[str]] = None
+    rating_stars: Optional[float] = None
+    sizes: Optional[List[str]] = None
+    colors: Optional[List[str]] = None
+    seller: Optional[str] = None
+    top_reviews: Optional[dict[str,dict]] = None
+    categories: Optional[List[str]] = None
+
+class ProductSummary(BaseModel):
+    id: int
+    name: str
+    category: str
+    price: float
+    final_price: Optional[float] = None
+    brand: Optional[str] = None
+    image_url: Optional[str] = None
+    rating_stars: Optional[float] = None
+
+    class Config:
+        orm_mode = True
+
+class ProductDetail(ProductBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
 #Token schema
 class Token(BaseModel):
     access_token: str

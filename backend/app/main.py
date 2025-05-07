@@ -7,7 +7,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from contextlib import asynccontextmanager
 from backend.app.db.database import engine, Base, AsyncSessionLocal
-from backend.app.routers import auth
+from backend.app.routers import auth, products
 from sqlalchemy.sql import text
 
 @asynccontextmanager
@@ -38,7 +38,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
-
+app.include_router(products.router)
 @app.get("/")
 async def root():
     return {"message": "Welcome to the Smart Shopping Assistance API!"}
