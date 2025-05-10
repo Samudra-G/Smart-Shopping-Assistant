@@ -51,13 +51,31 @@ class ProductSummary(BaseModel):
     rating_stars: Optional[float] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class ProductDetail(ProductBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+class CartItemCreate(BaseModel):
+    product_id: int
+    quantity: Optional[int] = 1
+
+class CartItemResponse(BaseModel):
+    id: int
+    product_id: int
+    quantity: int
+    added_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class CartItemUpdate(BaseModel):
+    user_id: int
+    product_id: int
+    quantity: int
 
 #Token schema
 class Token(BaseModel):
