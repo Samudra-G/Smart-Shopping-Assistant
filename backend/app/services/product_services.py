@@ -1,10 +1,13 @@
+from typing import Optional
 from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import or_
 from backend.app.models import models
 from backend.app.db.database import get_db
-from backend.app.db.schemas import ProductSummary, ProductDetail
+from backend.app.db.schemas import ProductSummary, ProductDetail, TokenData
+from backend.app.services.user_services import UserService
+from backend.app.auth.oauth2 import get_current_user_optional
 
 class ProductService:
     @staticmethod
@@ -41,12 +44,19 @@ class ProductService:
         return products
 
     @staticmethod
-    async def get_product(product_id: int, db: AsyncSession) -> ProductDetail:
+    async def get_product(product_id: int, db: AsyncSession = Depends(get_db),
+                          current_user: Optional[TokenData] = Depends(get_current_user_optional)) -> ProductDetail:
+
+        user_id = current_user.id if current_user else None
+
         query = select(models.Product).where(models.Product.id == product_id)
         result = await db.execute(query)
         product = result.scalars().first()
         
         if not product:
             raise HTTPException(status_code=404, detail="Product not found")
+        
+        if current_user:
+            await UserService.log_product_view(user_id, product_id, db)
         
         return product

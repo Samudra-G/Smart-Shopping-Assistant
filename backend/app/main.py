@@ -7,7 +7,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from contextlib import asynccontextmanager
 from backend.app.db.database import engine, Base, AsyncSessionLocal
-from backend.app.routers import auth, products, carts
+from backend.app.routers import auth, products, carts, purchase, browsing
 from sqlalchemy.sql import text
 
 @asynccontextmanager
@@ -40,6 +40,8 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(products.router)
 app.include_router(carts.router)
+app.include_router(purchase.router)
+app.include_router(browsing.router)
 
 @app.get("/")
 async def root():

@@ -77,6 +77,25 @@ class CartItemUpdate(BaseModel):
     product_id: int
     quantity: int
 
+class PurchaseItemResponse(BaseModel):
+    id: int
+    product_id: int
+    quantity: int
+    purchased_at: datetime
+    product: Optional[ProductSummary]
+
+    class Config:
+        from_attributes = True
+
+class BrowsingHistoryItem(BaseModel):
+    id: int
+    product_id: int
+    viewed_at: datetime
+    product: Optional[ProductSummary]
+
+    class Config:
+        from_attributes = True
+
 #Token schema
 class Token(BaseModel):
     access_token: str

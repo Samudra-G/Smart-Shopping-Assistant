@@ -6,8 +6,7 @@ from datetime import datetime, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.auth.oauth2 import get_current_user
 from backend.app.db.database import get_db
-from backend.app.db.schemas import CartItemCreate, CartItemResponse, CartItemUpdate
-from backend.app.services.product_services import ProductService
+from backend.app.db.schemas import CartItemCreate, CartItemResponse
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 

@@ -1,10 +1,13 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import update
-from fastapi import HTTPException
+from fastapi import HTTPException, Depends
 from backend.app.models.models import User
 from backend.app.db.schemas import UserCreate
 from backend.app.auth.verify import hash_password
+from backend.app.auth.oauth2 import get_current_user
+from backend.app.models import models
+from typing import Optional
 
 class UserService:
 
@@ -43,3 +46,11 @@ class UserService:
             raise HTTPException(status_code=400, detail="User not found")
         
         return user
+    
+    @staticmethod
+    async def log_product_view(user_id: Optional[int], product_id: int, db: AsyncSession):
+        
+        if user_id is not None:
+            entry = models.BrowsingHistory(user_id=user_id, product_id=product_id)
+            db.add(entry)
+            await db.commit()

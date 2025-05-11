@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.db.database import get_db
@@ -5,6 +6,8 @@ from backend.app.db.schemas import ProductSummary, ProductDetail
 from backend.app.services.product_services import ProductService
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+from backend.app.auth.oauth2 import get_current_user_optional
+from backend.app.db.schemas import TokenData
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -25,5 +28,6 @@ async def search_products(request: Request, q: str = Query(..., min_length=2), l
 
 @router.get("/{product_id}", response_model=ProductDetail)
 @limiter.limit("10/minute")
-async def get_product(request: Request, product_id: int, db: AsyncSession = Depends(get_db)):
-    return await ProductService.get_product(product_id, db)
+async def get_product(request: Request, product_id: int, db: AsyncSession = Depends(get_db),
+                      current_user: Optional[TokenData] = Depends(get_current_user_optional)):
+    return await ProductService.get_product(product_id, db, current_user)

@@ -17,8 +17,18 @@ if ALGORITHM is None:
     raise ValueError("ALGORITHM environment variable is not set")
 
 ACCESS_TOKEN_EXPIRATION_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRATION_MINUTES", 30))
+from fastapi.security import OAuth2PasswordBearer
+from fastapi import Request
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+class OptionalOAuth2PasswordBearer(OAuth2PasswordBearer):
+    async def __call__(self, request: Request) -> Optional[str]:
+        authorization: Optional[str] = request.headers.get("Authorization")
+        if not authorization:
+            return None
+        return await super().__call__(request)
+
+
+oauth2_scheme = OptionalOAuth2PasswordBearer(tokenUrl="token")
 
 def create_access_token(data: dict) -> str:
 
@@ -58,3 +68,16 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
                                          headers={"WWW-Authenticate":"Bearer"})
     
     return verify_access_token(token, credentials_exception)
+
+def get_current_user_optional(token: str = Depends(oauth2_scheme)) -> Optional[TokenData]:
+
+    if token is None:
+        return None
+    
+    credentials_exception = HTTPException(status_code=401, detail="Could not validate credentials", 
+                                         headers={"WWW-Authenticate":"Bearer"})
+
+    try:
+        return verify_access_token(token, credentials_exception)
+    except HTTPException:
+        return None
